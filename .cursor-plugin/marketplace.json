@@ -1,0 +1,18 @@
+{
+  "name": "wistia-agent-plugins",
+  "owner": {
+    "name": "Wistia",
+    "url": "https://wistia.com"
+  },
+  "metadata": {
+    "description": "Wistia's plugins for AI coding agents and agentic editors",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "wistia",
+      "source": "./plugins/wistia",
+      "description": "Manage a Wistia video hosting account: media, folders, channels, captions, analytics, and AI remix."
+    }
+  ]
+}

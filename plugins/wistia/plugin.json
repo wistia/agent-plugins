@@ -1,0 +1,23 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "wistia",
+  "version": "0.1.0",
+  "description": "Manage a Wistia video hosting account: media, folders, channels, captions, analytics, and AI remix.",
+  "author": {
+    "name": "Wistia",
+    "url": "https://wistia.com"
+  },
+  "homepage": "https://wistia.com",
+  "repository": "https://github.com/wistia/agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "wistia",
+    "video",
+    "media",
+    "channels",
+    "captions",
+    "analytics",
+    "webinars",
+    "mcp"
+  ]
+}

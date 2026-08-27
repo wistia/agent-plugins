@@ -1,0 +1,22 @@
+{
+  "name": "wistia",
+  "displayName": "Wistia",
+  "version": "0.1.0",
+  "description": "Manage a Wistia video hosting account: media, folders, channels, captions, analytics, and AI remix.",
+  "author": {
+    "name": "Wistia",
+    "url": "https://wistia.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "wistia",
+    "video",
+    "media",
+    "channels",
+    "captions",
+    "analytics",
+    "webinars",
+    "mcp"
+  ],
+  "logo": "assets/logo.svg"
+}
