@@ -30,6 +30,15 @@ const schemaPaths = {
 
 const pluginNamePattern = /^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/;
 const marketplaceNamePattern = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+const skillNamePattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const skillResourcePattern = /(?:\]\(|`)((?:\.\/)?(?:assets|references|scripts)\/[^\s)`#]+)(?:#[^\s)`]*)?(?:\)|`)/g;
+const nonPortableSkillPatterns = [
+  { pattern: /\/mnt\/(?:skills|user-data)\//, label: "Claude filesystem paths" },
+  { pattern: /\bask_user_input_v\d+\b/, label: "Claude-specific input tools" },
+  { pattern: /\btool_search\b/, label: "host-specific tool discovery" },
+  { pattern: /\bpresent_files\b/, label: "Claude-specific file presentation" },
+  { pattern: /\bvisualize:[a-z0-9_-]+\b/i, label: "host-specific visualize tools" },
+];
 
 function addError(message) {
   errors.push(message);
@@ -150,7 +159,12 @@ function parseFrontmatter(content) {
       continue;
     }
     const key = line.slice(0, separator).trim();
-    const value = line.slice(separator + 1).trim();
+    const rawValue = line.slice(separator + 1).trim();
+    const matchingQuotes =
+      rawValue.length >= 2 &&
+      ((rawValue.startsWith('"') && rawValue.endsWith('"')) ||
+        (rawValue.startsWith("'") && rawValue.endsWith("'")));
+    const value = matchingQuotes ? rawValue.slice(1, -1) : rawValue;
     fields[key] = value;
   }
 
@@ -250,6 +264,83 @@ async function validateFrontmatterFile(filePath, componentName, requiredKeys, pl
   }
 }
 
+async function validateSkillFile(skillDir, pluginName) {
+  const skillFile = path.join(skillDir, "SKILL.md");
+  const relativeSkillDir = path.relative(repoRoot, skillDir);
+  const skillDirName = path.basename(skillDir);
+
+  if (!(await pathExists(skillFile))) {
+    addError(`${pluginName}: skill directory is missing SKILL.md: ${relativeSkillDir}`);
+    return;
+  }
+
+  const content = await fs.readFile(skillFile, "utf8");
+  const parsed = parseFrontmatter(content);
+  const relativeFile = path.relative(repoRoot, skillFile);
+
+  if (!parsed) {
+    addError(`${pluginName}: skill file missing YAML frontmatter: ${relativeFile}`);
+    return;
+  }
+
+  for (const key of ["name", "description"]) {
+    if (!parsed[key] || parsed[key].length === 0) {
+      addError(`${pluginName}: skill file missing "${key}" in frontmatter: ${relativeFile}`);
+    }
+  }
+
+  if (parsed.name) {
+    if (!skillNamePattern.test(parsed.name) || parsed.name.length > 64) {
+      addError(
+        `${pluginName}: skill name must be lowercase kebab-case and at most 64 characters: ${relativeFile}`
+      );
+    }
+    if (parsed.name !== skillDirName) {
+      addError(
+        `${pluginName}: skill name "${parsed.name}" must match directory "${skillDirName}": ${relativeFile}`
+      );
+    }
+  }
+
+  if (parsed.description && parsed.description.length > 1024) {
+    addError(`${pluginName}: skill description exceeds 1024 characters: ${relativeFile}`);
+  }
+
+  const normalizedContent = normalizeNewlines(content);
+  const lineCount = normalizedContent.endsWith("\n")
+    ? normalizedContent.split("\n").length - 1
+    : normalizedContent.split("\n").length;
+  if (lineCount > 500) {
+    addError(
+      `${pluginName}: SKILL.md exceeds the repository's 500-line progressive-disclosure limit (${lineCount} lines): ${relativeFile}`
+    );
+  }
+
+  for (const { pattern, label } of nonPortableSkillPatterns) {
+    if (pattern.test(content)) {
+      addError(`${pluginName}: skill uses ${label}: ${relativeFile}`);
+    }
+  }
+
+  for (const match of content.matchAll(skillResourcePattern)) {
+    const resourcePath = match[1].replace(/^\.\//, "");
+    if (!isSafeRelativePath(resourcePath)) {
+      addError(`${pluginName}: skill has an unsafe resource reference "${match[1]}": ${relativeFile}`);
+      continue;
+    }
+
+    const resolved = path.resolve(skillDir, resourcePath);
+    const skillRoot = `${path.resolve(skillDir)}${path.sep}`;
+    if (!resolved.startsWith(skillRoot)) {
+      addError(`${pluginName}: skill resource escapes its directory "${match[1]}": ${relativeFile}`);
+      continue;
+    }
+    if (!(await pathExists(resolved))) {
+      addError(`${pluginName}: skill references missing resource "${match[1]}": ${relativeFile}`);
+    }
+  }
+}
+
 async function validateComponentFrontmatter(pluginDir, pluginName) {
   const rulesDir = path.join(pluginDir, "rules");
   if (await pathExists(rulesDir)) {
@@ -264,10 +355,14 @@ async function validateComponentFrontmatter(pluginDir, pluginName) {
 
   const skillsDir = path.join(pluginDir, "skills");
   if (await pathExists(skillsDir)) {
-    const files = await walkFiles(skillsDir);
-    for (const file of files) {
-      if (path.basename(file) === "SKILL.md") {
-        await validateFrontmatterFile(file, "skill", ["name", "description"], pluginName);
+    const entries = await fs.readdir(skillsDir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        await validateSkillFile(path.join(skillsDir, entry.name), pluginName);
+      } else {
+        addError(
+          `${pluginName}: skills/ may contain only skill directories; found ${path.relative(repoRoot, path.join(skillsDir, entry.name))}`
+        );
       }
     }
   }
