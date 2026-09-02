@@ -53,10 +53,12 @@ npm run validate
 ```
 
 Validates the Cursor and Agent Plugins manifests against pinned snapshots of
-their official schemas, then checks referenced paths and skill frontmatter.
-Schema provenance is documented in [`schemas/README.md`](./schemas/README.md).
-Fix all reported errors before submitting to a marketplace. The same command
-runs in GitHub Actions on pull requests and pushes to `main`.
+their official schemas, then checks referenced paths, Agent Skills naming and
+frontmatter, bundled skill resources, progressive-disclosure size, and known
+host-specific constructs. Schema provenance is documented in
+[`schemas/README.md`](./schemas/README.md). Fix all reported errors before
+submitting to a marketplace. The same command runs in GitHub Actions on pull
+requests and pushes to `main`.
 
 ## License
 

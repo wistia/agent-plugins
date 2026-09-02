@@ -1,6 +1,6 @@
 ---
 name: using-wistia
-description: Work with a Wistia account through the Wistia MCP server — find and manage media, folders, channels, captions, and webinars, pull analytics, and create AI remixes. Use when a task involves Wistia videos, media, or account content.
+description: Work with a Wistia account through the Wistia MCP server — understand core concepts, find and manage content, paginate results, use analytics, and create AI remixes. Use for general or multi-purpose Wistia tasks that do not fit a more specific bundled workflow skill.
 ---
 
 # Using Wistia
@@ -11,6 +11,19 @@ with this plugin provides full access to a Wistia account.
 The server's initialization instructions and each tool's current input and
 output schemas are authoritative for tool-level behavior. Follow them when
 they differ from this portable workflow guidance.
+
+## Specialized workflows
+
+Use a specialized Wistia skill when the request matches one of these outcomes:
+
+- `wistia-video-upload` for uploading or finishing setup on newly uploaded media.
+- `wistia-language-audit-order` for comparing audience languages with caption and dub coverage.
+- `wistia-registration-updates` for webinar registration pacing and recurring updates.
+- `wistia-webinar-recap` for post-webinar analysis, clips, and recap content.
+- `wistia-video-performance-report` for read-only media, folder, channel, or account scorecards.
+
+This skill remains the fallback for general Wistia work and shared operating
+habits. Do not combine overlapping workflows unless the user asks for both.
 
 ## Key concepts
 
