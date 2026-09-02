@@ -1,8 +1,7 @@
 {
   "name": "wistia-agent-plugins",
   "owner": {
-    "name": "Wistia",
-    "url": "https://wistia.com"
+    "name": "Wistia"
   },
   "metadata": {
     "description": "Wistia's plugins for AI coding agents and agentic editors",

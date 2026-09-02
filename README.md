@@ -37,7 +37,8 @@ plugins/
     .cursor-plugin/
       plugin.json           Cursor plugin manifest
 scripts/
-  validate-plugins.mjs      Structure validator (run before submitting)
+  validate-plugins.mjs      Schema and structure validator
+schemas/                    Pinned official schema snapshots
 ```
 
 The MCP server code is **not** in this repo — plugins point at Wistia's hosted
@@ -47,11 +48,15 @@ authentication and configuration details.
 ## Validation
 
 ```bash
-node scripts/validate-plugins.mjs
+npm ci
+npm run validate
 ```
 
-Validates marketplace/plugin manifests, referenced paths, and skill
-frontmatter. Fix all reported errors before submitting to a marketplace.
+Validates the Cursor and Agent Plugins manifests against pinned snapshots of
+their official schemas, then checks referenced paths and skill frontmatter.
+Schema provenance is documented in [`schemas/README.md`](./schemas/README.md).
+Fix all reported errors before submitting to a marketplace. The same command
+runs in GitHub Actions on pull requests and pushes to `main`.
 
 ## License
 

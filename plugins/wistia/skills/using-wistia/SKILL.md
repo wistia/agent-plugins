@@ -8,6 +8,10 @@ description: Work with a Wistia account through the Wistia MCP server — find a
 Wistia is a video hosting and analytics platform. The Wistia MCP server bundled
 with this plugin provides full access to a Wistia account.
 
+The server's initialization instructions and each tool's current input and
+output schemas are authoritative for tool-level behavior. Follow them when
+they differ from this portable workflow guidance.
+
 ## Key concepts
 
 - **Media**: any uploaded file (video, audio, PDF, image). Identified by a
@@ -17,12 +21,18 @@ with this plugin provides full access to a Wistia account.
 - **Channel**: a curated collection of episodes for public viewing or podcast
   distribution.
 - **Webinar**: a live video event with registration, scheduling, and analytics.
+- **Remix**: an AI-assisted edit generated from source media and instructions,
+  with an exported media result when processing completes.
 
 ## Finding things
 
 - Prefer `search` when given a name or keyword — it also matches transcript
   text. Use `get-medias` to list or filter by folder, tags, type, or
   hashed_ids.
+- Use `search` with a `custom_metadata` object to match metadata fields. For
+  example, `{"region":"emea"}` matches a value and
+  `{"region":{"exists":false}}` finds media missing that field. An empty
+  query can be combined with this filter.
 - When the user says "video" they usually mean a media object.
 - Most tools require a `hashed_id`. Get one from `get-medias`, `get-folders`,
   `get-channels`, or `search` — or ask the user.
@@ -51,11 +61,22 @@ with this plugin provides full access to a Wistia account.
 - Bulk operations run asynchronously. Poll `get-background-job-status` for
   completion.
 
+## AI Remix
+
+- Before starting, use `get-remix-account-status` to check available credits.
+- Call `create-remix` with source media and clear editing instructions. Remix
+  runs asynchronously and automatically exports the completed result as
+  Wistia media.
+- Poll `get-remix` for status and results. Use `continue-remix` when the
+  user wants to refine an existing remix rather than start over.
+
 ## Keeping responses small
 
-- Read tools accept an optional `fields` selector using Google
-  partial-response syntax (`hashed_id,name`, `hashed_id,assets(url)`) to
-  return only the parts of the response you need. Use it on large listings.
+- Tools whose input schema advertises `fields` accept a selector using Google
+  partial-response syntax (`hashed_id,name`, `hashed_id,assets(url)`). Choose
+  field names from that tool's output schema and use the selector for large
+  list, search, or response-heavy calls. Never pass `fields` to a tool whose
+  input schema does not advertise it.
 
 ## Authentication
 
