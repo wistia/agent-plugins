@@ -1,7 +1,7 @@
 {
   "name": "wistia",
   "displayName": "Wistia",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Manage a Wistia video hosting account: media, folders, channels, captions, analytics, and AI remix.",
   "author": {
     "name": "Wistia"
@@ -19,5 +19,5 @@
     "webinars",
     "mcp"
   ],
-  "logo": "assets/logo.svg"
+  "logo": "assets/logo-square.svg"
 }
