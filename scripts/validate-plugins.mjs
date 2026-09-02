@@ -1,25 +1,38 @@
 #!/usr/bin/env node
 
-// Structure validator for this repo, adapted from cursor/plugin-template
-// (scripts/validate-template.mjs). Run from the repo root: node scripts/validate-plugins.mjs
+// Validate official schemas plus repository-specific structure and frontmatter.
+// Schema snapshots and their provenance live under schemas/.
 
+import Ajv from "ajv";
+import Ajv2020 from "ajv/dist/2020.js";
+import addFormats from "ajv-formats";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 
-const repoRoot = process.cwd();
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(scriptDir, "..");
 const errors = [];
-const warnings = [];
+
+const schemaPaths = {
+  cursorMarketplace: path.join(repoRoot, "schemas", "cursor", "marketplace.schema.json"),
+  cursorPlugin: path.join(repoRoot, "schemas", "cursor", "plugin.schema.json"),
+  agentPlugin: path.join(
+    repoRoot,
+    "schemas",
+    "agent-plugins",
+    "1.0.0",
+    "plugin.schema.json"
+  ),
+  agentMcp: path.join(repoRoot, "schemas", "agent-plugins", "1.0.0", "mcp.schema.json"),
+};
 
 const pluginNamePattern = /^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/;
 const marketplaceNamePattern = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 
 function addError(message) {
   errors.push(message);
-}
-
-function addWarning(message) {
-  warnings.push(message);
 }
 
 async function pathExists(targetPath) {
@@ -58,6 +71,53 @@ async function readJsonFile(filePath, context) {
     return JSON.parse(raw);
   } catch (error) {
     addError(`${context} contains invalid JSON (${filePath}): ${error.message}`);
+    return null;
+  }
+}
+
+function formatSchemaError(error) {
+  const location = error.instancePath || "/";
+  if (error.keyword === "additionalProperties") {
+    return `${location}: unsupported property "${error.params.additionalProperty}"`;
+  }
+  return `${location}: ${error.message}`;
+}
+
+function validateAgainstSchema(validate, document, filePath) {
+  if (validate(document)) {
+    return;
+  }
+
+  const relativeFile = path.relative(repoRoot, filePath);
+  for (const error of validate.errors ?? []) {
+    addError(`${relativeFile}: ${formatSchemaError(error)}`);
+  }
+}
+
+async function loadSchemaValidators() {
+  const schemas = {};
+  for (const [name, schemaPath] of Object.entries(schemaPaths)) {
+    const schema = await readJsonFile(schemaPath, `${name} schema`);
+    if (!schema) {
+      return null;
+    }
+    schemas[name] = schema;
+  }
+
+  try {
+    const cursorAjv = new Ajv({ allErrors: true, strict: true });
+    const agentPluginsAjv = new Ajv2020({ allErrors: true, strict: true });
+    addFormats(cursorAjv);
+    addFormats(agentPluginsAjv);
+
+    return {
+      cursorMarketplace: cursorAjv.compile(schemas.cursorMarketplace),
+      cursorPlugin: cursorAjv.compile(schemas.cursorPlugin),
+      agentPlugin: agentPluginsAjv.compile(schemas.agentPlugin),
+      agentMcp: agentPluginsAjv.compile(schemas.agentMcp),
+    };
+  } catch (error) {
+    addError(`Could not compile vendored schemas: ${error.message}`);
     return null;
   }
 }
@@ -251,12 +311,19 @@ function resolveMarketplaceSource(source, pluginRoot) {
 }
 
 async function main() {
+  const validators = await loadSchemaValidators();
+  if (!validators) {
+    summarizeAndExit();
+    return;
+  }
+
   const marketplacePath = path.join(repoRoot, ".cursor-plugin", "marketplace.json");
   const marketplace = await readJsonFile(marketplacePath, "Marketplace manifest");
   if (!marketplace) {
     summarizeAndExit();
     return;
   }
+  validateAgainstSchema(validators.cursorMarketplace, marketplace, marketplacePath);
 
   if (typeof marketplace.name !== "string" || !marketplaceNamePattern.test(marketplace.name)) {
     addError(
@@ -324,6 +391,7 @@ async function main() {
     if (!pluginManifest) {
       continue;
     }
+    validateAgainstSchema(validators.cursorPlugin, pluginManifest, manifestPath);
 
     if (typeof pluginManifest.name !== "string" || !pluginNamePattern.test(pluginManifest.name)) {
       addError(
@@ -347,14 +415,24 @@ async function main() {
 
     await validateComponentFrontmatter(pluginDir, entry.name);
 
-    const hooksPath = path.join(pluginDir, "hooks", "hooks.json");
-    if (!(await pathExists(hooksPath))) {
-      addWarning(`${entry.name}: no hooks/hooks.json file found (only needed when using hooks).`);
+    const portablePluginPath = path.join(pluginDir, "plugin.json");
+    const portablePlugin = await readJsonFile(
+      portablePluginPath,
+      `${entry.name} Agent Plugins manifest`
+    );
+    if (portablePlugin) {
+      validateAgainstSchema(validators.agentPlugin, portablePlugin, portablePluginPath);
+      if (portablePlugin.name !== entry.name) {
+        addError(
+          `${entry.name}: marketplace entry name does not match portable plugin.json name ("${portablePlugin.name}").`
+        );
+      }
     }
 
     const mcpPath = path.join(pluginDir, "mcp.json");
-    if (!(await pathExists(mcpPath))) {
-      addWarning(`${entry.name}: no mcp.json file found (only needed when using MCP servers).`);
+    const portableMcp = await readJsonFile(mcpPath, `${entry.name} Agent Plugins MCP manifest`);
+    if (portableMcp) {
+      validateAgainstSchema(validators.agentMcp, portableMcp, mcpPath);
     }
   }
 
@@ -362,14 +440,6 @@ async function main() {
 }
 
 function summarizeAndExit() {
-  if (warnings.length > 0) {
-    console.log("Warnings:");
-    for (const warning of warnings) {
-      console.log(`- ${warning}`);
-    }
-    console.log("");
-  }
-
   if (errors.length > 0) {
     console.error("Validation failed:");
     for (const error of errors) {

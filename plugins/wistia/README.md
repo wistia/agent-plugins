@@ -20,15 +20,21 @@ also connect to that URL directly without the plugin.
 
 ## Authentication
 
-Two options:
+Installing this plugin uses OAuth. No token setup is required: the MCP client
+starts Wistia's browser authorization flow when it first connects to the
+server. If authorization fails, complete the sign-in prompt in the client.
 
-1. **OAuth (recommended)** — no setup. The MCP client automatically starts the
-   OAuth flow the first time the server is used.
-2. **Bearer token** — create an API token at
-   <https://account.wistia.com/account/api> and send it as an
-   `Authorization: Bearer YOUR_API_TOKEN` header.
+At the time of writing, the hosted MCP integration is available to account
+owners only.
 
-Note: at the time of writing, this is supported for account owners only.
+### Connecting directly with a Bearer token
+
+When configuring `https://api.wistia.com/mcp/api` directly in an MCP client,
+without this plugin, you can instead create an API token at
+<https://account.wistia.com/account/api> and configure the client to send it
+as an `Authorization: Bearer YOUR_API_TOKEN` header. The plugin intentionally
+does not declare a token placeholder: its default connection relies on the
+server's OAuth challenge.
 
 ## Scoping the tool surface
 
