@@ -1,6 +1,6 @@
 ---
 name: using-wistia
-description: Work with a Wistia account through the Wistia MCP server — understand core concepts, find and manage content, paginate results, use analytics, and create AI remixes. Use for general or multi-purpose Wistia tasks that do not fit a more specific bundled workflow skill.
+description: Work with a Wistia account through the Wistia MCP server — understand core concepts, find and manage content, paginate results, use analytics, and create AI video edits with Mochine. Use for general or multi-purpose Wistia tasks that do not fit a more specific bundled workflow skill.
 ---
 
 # Using Wistia
@@ -34,8 +34,9 @@ habits. Do not combine overlapping workflows unless the user asks for both.
 - **Channel**: a curated collection of episodes for public viewing or podcast
   distribution.
 - **Webinar**: a live video event with registration, scheduling, and analytics.
-- **Remix**: an AI-assisted edit generated from source media and instructions,
-  with an exported media result when processing completes.
+- **Mochine**: Wistia's AI video editor. An edit is generated from an
+  instruction, with or without source media, and exports as Wistia media when
+  it finishes.
 
 ## Finding things
 
@@ -74,14 +75,17 @@ habits. Do not combine overlapping workflows unless the user asks for both.
 - Bulk operations run asynchronously. Poll `get-background-job-status` for
   completion.
 
-## AI Remix
+## Mochine
 
-- Before starting, use `get-remix-account-status` to check available credits.
-- Call `create-remix` with source media and clear editing instructions. Remix
-  runs asynchronously and automatically exports the completed result as
-  Wistia media.
-- Poll `get-remix` for status and results. Use `continue-remix` when the
-  user wants to refine an existing remix rather than start over.
+- Creating or revising an edit spends Credits. Check `get-credit-balance` and
+  confirm the spend with the user first.
+- Call `create-mochine-edit` with a clear `instruction` and the
+  `source_media_ids` to edit. The edit runs asynchronously and automatically
+  exports the completed result as Wistia media.
+- Poll `get-mochine-edit` every few seconds for status and the
+  `output_media_id`. Use `revise-mochine-edit` when the user wants to refine
+  an existing edit rather than start over. Each revision spends Credits
+  again, so check the edit instead of resending a call.
 
 ## Keeping responses small
 

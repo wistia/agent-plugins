@@ -1,12 +1,12 @@
 ---
 name: wistia-webinar-recap
-description: "Turn a completed Wistia webinar into a performance recap, optional Remix-generated social clips, and a ready-to-edit recap article or HTML report. Use for post-event webinar analysis and repurposing; not for registration pacing before the event."
+description: "Turn a completed Wistia webinar into a performance recap, optional Mochine-generated social clips, and a ready-to-edit recap article or HTML report. Use for post-event webinar analysis and repurposing; not for registration pacing before the event."
 ---
 
 # Wistia Webinar Recap
 
 Produce a trustworthy post-event summary first, then offer optional content
-repurposing. Reading analytics is the default. Creating Remix clips spends
+repurposing. Reading analytics is the default. Creating Mochine clips spends
 credits and requires explicit approval.
 
 The connected Wistia MCP server instructions and tool schemas are authoritative.
@@ -62,19 +62,19 @@ placeholder, repeat or remove the marked card blocks as needed, HTML-escape
 inserted text, and remove sections for unavailable data. Do not overwrite an
 existing file without permission.
 
-## 5. Optional Remix clips
+## 5. Optional Mochine clips
 
 Offer clips after the read-only recap unless the user already requested them.
 Before creating anything:
 
 1. Propose the number of clips, purpose, orientation, and source moments.
-2. Check `get-remix-account-status` for credit availability.
+2. Check `get-credit-balance` for credit availability.
 3. Obtain explicit approval for the proposed credit-using work.
 
-Call `create-remix` once per approved variant with the webinar media and a
+Call `create-mochine-edit` once per approved variant with the webinar media and a
 complete instruction describing the moment, length, orientation, captions,
-and copy goal. Multiple independent variants may run in parallel. Remix
-auto-exports; poll `get-remix` for status and do not call a separate export
+and copy goal. Multiple independent variants may run in parallel. Mochine
+auto-exports; poll `get-mochine-edit` for status and do not call a separate export
 tool unless the current server instructions explicitly require it.
 
 Only embed permanent, ready Wistia media IDs in the saved report. Temporary

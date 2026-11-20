@@ -7,7 +7,7 @@ description: "Build a read-only Wistia performance scorecard for one video, a fo
 
 Produce a synthesized scorecard with a plain-language takeaway rather than a
 raw stat dump. This workflow is strictly read-only: never create, edit, move,
-archive, or delete media, and never run Remix.
+archive, or delete media, and never run Mochine.
 
 The connected Wistia MCP server instructions and current tool schemas are
 authoritative. Use

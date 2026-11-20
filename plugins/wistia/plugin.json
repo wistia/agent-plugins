@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wistia",
   "version": "1.0.0",
-  "description": "Manage, analyze, and edit your Wistia videos from your AI agent: media, folders, channels, captions, webinars, analytics, and AI remix.",
+  "description": "Manage, analyze, and edit your Wistia videos from your AI agent: media, folders, channels, captions, webinars, analytics, and AI video editing with Mochine.",
   "author": {
     "name": "Wistia",
     "url": "https://wistia.com"
