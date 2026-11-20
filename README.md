@@ -4,14 +4,14 @@ Wistia's plugins for AI coding agents and agentic editors, built to the
 [Agent Plugins](https://agent-plugins.org) open standard.
 
 Each plugin connects an agent to [Wistia](https://wistia.com) — video hosting,
-analytics, webinars, and AI remix — through Wistia's hosted MCP server, along
+analytics, webinars, and AI video editing with Mochine — through Wistia's hosted MCP server, along
 with skills that teach agents how to use it well.
 
 ## Plugins
 
 | Plugin | Description |
 | --- | --- |
-| [`wistia`](./plugins/wistia) | Full access to a Wistia account: media, folders, channels, captions, webinars, analytics, and AI remix. |
+| [`wistia`](./plugins/wistia) | Full access to a Wistia account: media, folders, channels, captions, webinars, analytics, and AI video editing with Mochine. |
 
 ## Marketplaces
 

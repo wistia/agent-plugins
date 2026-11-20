@@ -2,7 +2,7 @@
 
 Connects AI agents to a [Wistia](https://wistia.com) account through Wistia's
 hosted MCP server: media, folders, channels, captions, webinars, analytics,
-and AI remix. Includes general guidance plus focused workflow skills that teach
+and AI video editing with Mochine. Includes general guidance plus focused workflow skills that teach
 agents how to use the tools safely and effectively.
 
 ## What's inside
@@ -20,11 +20,11 @@ agents how to use the tools safely and effectively.
 
 | Skill | Use it for |
 | --- | --- |
-| `using-wistia` | General Wistia concepts, discovery, pagination, analytics, uploads, and Remix |
+| `using-wistia` | General Wistia concepts, discovery, pagination, analytics, uploads, and Mochine |
 | `wistia-video-upload` | Uploading and safely finishing folder, metadata, tag, and caption setup |
 | `wistia-language-audit-order` | Auditing localization demand and coverage, then optionally ordering approved work |
 | `wistia-registration-updates` | Webinar registration pacing and optional recurring pre-event updates |
-| `wistia-webinar-recap` | Post-event scorecards, optional Remix clips, and recap drafts |
+| `wistia-webinar-recap` | Post-event scorecards, optional Mochine clips, and recap drafts |
 | `wistia-video-performance-report` | Read-only media, folder, channel, or account performance scorecards |
 
 Clients that implement Agent Skills discover these directories automatically.
@@ -74,8 +74,8 @@ If a client works better with fewer tools, append a `toolsets` query param to
 the server URL to expose only what you need, e.g.
 `https://api.wistia.com/mcp/api?toolsets=media,analytics`. Omit it to get every
 tool. Available toolsets: `media`, `tags`, `folders`, `channels`, `captions`,
-`customizations`, `webinars`, `sharing`, `remix`, `analytics`, `stats`,
-`account`. An unrecognized name returns a 422 listing the valid ones.
+`customizations`, `webinars`, `sharing`, `mochine`, `record`, `analytics`,
+`stats`, `account`. An unrecognized name returns a 422 listing the valid ones.
 
 ## Example prompts
 
