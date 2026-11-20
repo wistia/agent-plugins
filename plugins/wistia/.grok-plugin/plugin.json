@@ -1,0 +1,23 @@
+{
+  "name": "wistia",
+  "version": "1.0.0",
+  "description": "Manage a Wistia video hosting account from Grok Build: find and organize media, folders, channels, and tags; upload and edit captions; schedule and analyze webinars; pull media and account analytics; and create AI remixes through Wistia's hosted OAuth MCP server.",
+  "author": {
+    "name": "Wistia",
+    "url": "https://wistia.com"
+  },
+  "homepage": "https://wistia.com",
+  "repository": "https://github.com/wistia/agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "wistia",
+    "wistia mcp",
+    "wistia video",
+    "wistia webinars",
+    "wistia channels",
+    "wistia analytics"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "logo": "./assets/logo-square.svg"
+}

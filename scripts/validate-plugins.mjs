@@ -529,9 +529,75 @@ async function main() {
     if (portableMcp) {
       validateAgainstSchema(validators.agentMcp, portableMcp, mcpPath);
     }
+
+    await validateGrokAdapter(pluginDir, entry.name, pluginManifest, portablePlugin, portableMcp);
   }
 
   summarizeAndExit();
+}
+
+// Grok Build reads `.grok-plugin/plugin.json` first and loads MCP servers from
+// `.mcp.json` (Claude Code dialect: `type: "http"`), so the adapter must mirror
+// the portable manifests exactly.
+async function validateGrokAdapter(pluginDir, pluginName, cursorManifest, portablePlugin, portableMcp) {
+  const grokManifestPath = path.join(pluginDir, ".grok-plugin", "plugin.json");
+  const grokMcpPath = path.join(pluginDir, ".mcp.json");
+  const hasGrokManifest = await pathExists(grokManifestPath);
+  const hasGrokMcp = await pathExists(grokMcpPath);
+  if (!hasGrokManifest && !hasGrokMcp) {
+    return;
+  }
+  if (!hasGrokManifest || !hasGrokMcp) {
+    addError(`${pluginName}: .grok-plugin/plugin.json and .mcp.json must be added together.`);
+    return;
+  }
+
+  const grokManifest = await readJsonFile(grokManifestPath, `${pluginName} Grok plugin manifest`);
+  if (grokManifest) {
+    if (grokManifest.name !== pluginName) {
+      addError(`${pluginName}: .grok-plugin/plugin.json name must be "${pluginName}".`);
+    }
+    for (const [label, manifest] of [
+      [".cursor-plugin/plugin.json", cursorManifest],
+      ["plugin.json", portablePlugin],
+    ]) {
+      if (manifest && manifest.version !== grokManifest.version) {
+        addError(
+          `${pluginName}: .grok-plugin/plugin.json version (${grokManifest.version}) must match ${label} (${manifest.version}); the Grok marketplace bump workflow keys on it.`
+        );
+      }
+    }
+    if (typeof grokManifest.description !== "string" || grokManifest.description.trim().length === 0) {
+      addError(`${pluginName}: .grok-plugin/plugin.json needs a description.`);
+    }
+    for (const field of ["logo", "skills", "mcpServers"]) {
+      for (const value of extractPathValues(grokManifest[field])) {
+        await validateReferencedPath(pluginDir, `.grok-plugin ${field}`, value, pluginName);
+      }
+    }
+  }
+
+  const grokMcp = await readJsonFile(grokMcpPath, `${pluginName} Grok MCP config`);
+  if (!grokMcp || !portableMcp) {
+    return;
+  }
+  const grokServers = grokMcp.mcpServers ?? {};
+  const portableServers = portableMcp.mcpServers ?? {};
+  const names = new Set([...Object.keys(grokServers), ...Object.keys(portableServers)]);
+  for (const name of names) {
+    const grokServer = grokServers[name];
+    const portableServer = portableServers[name];
+    if (!grokServer || !portableServer) {
+      addError(`${pluginName}: MCP server "${name}" must be declared in both mcp.json and .mcp.json.`);
+      continue;
+    }
+    if (grokServer.url !== portableServer.url) {
+      addError(`${pluginName}: MCP server "${name}" url differs between mcp.json and .mcp.json.`);
+    }
+    if (portableServer.type === "streamable-http" && grokServer.type !== "http") {
+      addError(`${pluginName}: .mcp.json server "${name}" must use type "http" (Claude/Grok dialect of streamable-http).`);
+    }
+  }
 }
 
 function summarizeAndExit() {
