@@ -12,7 +12,9 @@ archive, or delete media, and never run Remix.
 The connected Wistia MCP server instructions and current tool schemas are
 authoritative. Use
 [assets/performance-report-template.html](assets/performance-report-template.html)
-only when the user wants a saved HTML report.
+only when the user wants a saved HTML report. If that file isn't available
+locally, fetch it from
+<https://raw.githubusercontent.com/wistia/agent-plugins/main/plugins/wistia/skills/wistia-video-performance-report/assets/performance-report-template.html>.
 
 ## 1. Scope and window
 

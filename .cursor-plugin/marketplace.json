@@ -4,14 +4,14 @@
     "name": "Wistia"
   },
   "metadata": {
-    "description": "Wistia's plugins for AI coding agents and agentic editors",
+    "description": "Official Wistia plugins for AI agents: manage, analyze, and edit your Wistia videos.",
     "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "wistia",
       "source": "./plugins/wistia",
-      "description": "Manage a Wistia video hosting account: media, folders, channels, captions, analytics, and AI remix."
+      "description": "Manage, analyze, and edit your Wistia videos from your AI agent: media, folders, channels, captions, webinars, analytics, and AI remix."
     }
   ]
 }

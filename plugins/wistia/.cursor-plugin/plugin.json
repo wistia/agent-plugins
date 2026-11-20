@@ -2,7 +2,7 @@
   "name": "wistia",
   "displayName": "Wistia",
   "version": "1.0.0",
-  "description": "Manage a Wistia video hosting account: media, folders, channels, captions, analytics, and AI remix.",
+  "description": "Manage, analyze, and edit your Wistia videos from your AI agent: media, folders, channels, captions, webinars, analytics, and AI remix.",
   "author": {
     "name": "Wistia"
   },

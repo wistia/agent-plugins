@@ -11,7 +11,9 @@ credits and requires explicit approval.
 
 The connected Wistia MCP server instructions and tool schemas are authoritative.
 Use [assets/recap-report-template.html](assets/recap-report-template.html) only
-when the user wants a saved HTML deliverable.
+when the user wants a saved HTML deliverable. If that file isn't available
+locally, fetch it from
+<https://raw.githubusercontent.com/wistia/agent-plugins/main/plugins/wistia/skills/wistia-webinar-recap/assets/recap-report-template.html>.
 
 ## 1. Identify the completed webinar
 

@@ -13,6 +13,8 @@ agents how to use the tools safely and effectively.
 | `mcp.json` | MCP server declaration pointing at Wistia's hosted server |
 | `skills/` | Portable Agent Skills for general Wistia use and focused workflows |
 | `.cursor-plugin/plugin.json` | Cursor marketplace manifest |
+| `.grok-plugin/plugin.json` | Grok Build plugin manifest (xAI marketplace) |
+| `.mcp.json` | The same hosted server in the Claude Code / Grok Build config dialect |
 
 ## Included skills
 
@@ -50,6 +52,21 @@ without this plugin, you can instead create an API token at
 as an `Authorization: Bearer YOUR_API_TOKEN` header. The plugin intentionally
 does not declare a token placeholder: its default connection relies on the
 server's OAuth challenge.
+
+## Network endpoints and permissions
+
+The plugin runs no local code and ships no secrets. It connects only to
+Wistia-owned endpoints:
+
+- `https://api.wistia.com/mcp/api` — the MCP server (Streamable HTTP)
+- `https://api.wistia.com/.well-known/oauth-protected-resource` and
+  `/.well-known/oauth-authorization-server` — OAuth discovery
+- `https://api.wistia.com/oauth/register`, `/oauth/authorize`, `/oauth/token` —
+  dynamic client registration, browser consent, and token exchange (PKCE S256)
+
+The OAuth grant covers the connected Wistia account with the scopes shown on
+the consent screen. Read, write, and delete tools act on that account, so
+connect a test account first if you want to try destructive tools.
 
 ## Scoping the tool surface
 
