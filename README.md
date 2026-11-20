@@ -23,7 +23,8 @@ with skills that teach agents how to use it well.
   [xAI plugin marketplace](https://github.com/xai-org/plugin-marketplace)
   indexes from this repo at a pinned commit. The catalog entry lives in that
   repo, not here.
-- **Grok Bot** — submitted through the
+- **Grok Bot** — listed at <https://grok-bot.directory/apps/wistia>. The
+  listing comes from the
   [Grok Bot plugin form](https://x.ai/bot/marketplace/submit-a-plugin), which
   points at this repo; no extra manifest.
 

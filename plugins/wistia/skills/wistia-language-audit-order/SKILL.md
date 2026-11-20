@@ -11,7 +11,9 @@ approved phase that may spend money.
 
 The connected Wistia server instructions and tool schemas are authoritative.
 Before comparing language codes, read
-[references/language-codes.md](references/language-codes.md).
+[references/language-codes.md](references/language-codes.md). If that file
+isn't available locally, fetch it from
+<https://raw.githubusercontent.com/wistia/agent-plugins/main/plugins/wistia/skills/wistia-language-audit-order/references/language-codes.md>.
 
 ## 1. Set the audit scope
 

@@ -1,7 +1,7 @@
 {
   "name": "wistia",
   "version": "1.0.0",
-  "description": "Manage a Wistia video hosting account from Grok Build: find and organize media, folders, channels, and tags; upload and edit captions; schedule and analyze webinars; pull media and account analytics; and create AI remixes through Wistia's hosted OAuth MCP server.",
+  "description": "Manage a Wistia video hosting account: find and organize media, folders, channels, and tags; upload and edit captions; schedule and analyze webinars; pull media and account analytics; and create AI remixes through Wistia's hosted OAuth MCP server.",
   "author": {
     "name": "Wistia",
     "url": "https://wistia.com"
